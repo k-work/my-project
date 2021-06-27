@@ -10,9 +10,9 @@
       </div>
       <div class="formStyle">
         <div class="formSection" v-if="active === 0">
-          <h1 class="title">Mis Datos</h1>
-          <p class="description">Revisa las datos y completa oquellas pendientes antes de continuar con el proceso.</p>
-          <div style="text-align: left;height: 330px;">
+          <h1 class="title">{{ stepOne.title }}</h1>
+          <p class="description">{{ stepOne.description }}</p>
+          <div class="inputAlign">
             <el-form label-position="top" label-width="80px" :model="formLabel">
               <el-form-item label="Nombre">
                 <el-input v-model="formLabel.nombre"></el-input>
@@ -22,26 +22,26 @@
               </el-form-item>
             </el-form>
           </div>
-          <div style="margin-top: 20px;display: flex;justify-content: flex-end;">
+          <div class="btnStyle">
             <el-button type="primary" round @click="next(1)">Continuar <i class="el-icon-right"></i></el-button>
           </div>
         </div>
         <div class="formSection" v-if="active === 1">
-          <h1 class="title">Pago del producto</h1>
-          <p class="description">Una vez efectuado el pago del producto, recibios un email con los detalles de la compro.</p>
+          <h1 class="title">{{ stepTwo.title }}</h1>
+          <p class="description">{{ stepTwo.description }}</p>
           <div class="rect">
-            <i class="el-icon-bank-card" style="margin-top: 20px;font-size: 80px; color:#F56C6C;"></i>
-            <h2>Tarjeta de crédito</h2>
-            <p>Se redirigira a uno plaraforma de pago. Se trata de un proceso seguro. Puede que la validacion del pago tarde 24 horas en completarse.</p>
-            <img src="@/assets/visa-master-icon-19.png" style="width: 100px;padding-bottom: 30px;">
+            <i class="el-icon-bank-card"></i>
+            <h2>{{ stepTwo.subTitle }}</h2>
+            <p>{{ stepTwo.subDescription }}</p>
+            <img src="@/assets/visa-master-icon-19.png" class="visaStyle">
           </div>
-          <div style="margin-top: 20px;display: flex;justify-content: space-between;">
+          <div class="btnsStyle">
             <el-button round @click="next(0)"><i class="el-icon-back"></i> Anterior</el-button>
             <el-button type="primary" round @click="next(3)">Pagar&emsp;&emsp;<i class="el-icon-right"></i></el-button>
           </div>
         </div>
         <div class="formSection" v-if="active === 3">
-            <img src="@/assets/diploma.svg" style="margin-top: 200px;width: 100px;" />
+            <img src="@/assets/diploma.svg" class="diplomaStyle" />
             <h2>{{ resTitle }}</h2>
             <p>{{ resDescription }}</p>
         </div>
@@ -78,6 +78,14 @@
     display: inline-block;
     text-align: center;
     margin-bottom: 10px;
+    .inputAlign {
+      text-align: left;
+      height: 330px;
+    }
+    .diplomaStyle {
+      margin-top: 200px;
+      width: 100px;
+    }
   }
   .title {
     padding-top: 30px;
@@ -85,11 +93,29 @@
   .description {
     margin-bottom: 60px;
   }
+  .btnStyle {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .btnsStyle {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .el-icon-bank-card {
+    margin-top: 20px;
+    font-size: 80px;
+    color:#F56C6C;
+  }
 }
 .rect {
   border: 1px solid #F5F5F5;
-  // height: 280px;
   padding: 0 50px;
+  .visaStyle {
+    width: 100px;
+    padding-bottom: 30px;
+  }
 }
 </style>
 
@@ -109,30 +135,44 @@ export default {
           nombre: '',
           apellidos: ''
         },
+        stepOne: {
+          title: 'Mis Datos',
+          description: 'Revisa las datos y completa oquellas pendientes antes de continuar con el proceso.',
+        },
+        stepTwo: {
+          title: 'Pago del producto',
+          description: 'Una vez efectuado el pago del producto, recibios un email con los detalles de la compro.',
+          subTitle: 'Tarjeta de crédito',
+          subDescription: 'Se redirigira a uno plaraforma de pago. Se trata de un proceso seguro. Puede que la validacion del pago tarde 24 horas en completarse.',
+        },
         resTitle: '',
         resDescription: '',
       };
     },
   methods: {
     next(val) {
-      if (val === 0) {
-        this.active = 0;
-      }
-      if (val === 1) {
-        this.active = 1;
-      }
-      if (val === 2) {
-        this.active = 2;
-      }
-      if (val === 3) {
-        this.active = 3;
-        const apiUrl = 'http://www.mocky.io/v2/5e3d41272d00003f7ed95c09';
-        axios
-          .get(apiUrl)
-          .then(response => {
-            this.resTitle = response.data.title;
-            this.resDescription = response.data.text;
-          })
+      const apiUrl = 'http://www.mocky.io/v2/5e3d41272d00003f7ed95c09';
+      switch (val) {
+        case 0 :
+          this.active = 0;
+          break;
+        case 1 :
+          this.active = 1;
+          break;
+        case 2 :
+          this.active = 2;
+          break;
+        case 3 :
+          this.active = 3;
+          axios
+            .get(apiUrl)
+            .then(response => {
+              this.resTitle = response.data.title;
+              this.resDescription = response.data.text;
+            })
+          break;
+        default:
+          break;
       }
     }
   }
